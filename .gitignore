@@ -1,0 +1,15 @@
+# user specific
+.idea/workspace.xml
+.idea/tasks.xml
+
+# gradle
+.idea/gradle.xml
+.idea/libraries
+.gradle
+/build/
+
+# java
+*.class
+
+# intellij
+.idea/misc.xml
