@@ -1,19 +1,20 @@
 package com.aidangrabe.msqlite.tabs.query
 
 import javafx.scene.control.Tab
+import javafx.scene.control.TableView
 import javafx.scene.control.TextArea
-import javafx.scene.web.WebView
 import tornadofx.*
 
 /**
  *
  */
-class QueryTab(val controller: QueryController): Tab("Query") {
+class QueryTab(val controller: QueryController) : Tab("Query") {
 
-    var webview: WebView by singleAssign()
+    val tableView: TableView<List<String>> = TableView()
     var queryField: TextArea by singleAssign()
 
     init {
+
         content = vbox {
             queryField = textarea()
             button("Send") {
@@ -21,7 +22,7 @@ class QueryTab(val controller: QueryController): Tab("Query") {
                     controller.onQueryButtonPressed(queryField.text)
                 }
             }
-            webview = webview()
+            add(tableView)
         }
 
         controller.onViewAttached(this)
