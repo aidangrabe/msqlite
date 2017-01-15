@@ -20,7 +20,7 @@ class SqliteApi(val packageName: String, val databaseName: String) {
 
     private fun parseTables(input: String): List<String> {
         return input.split("\\s+".toRegex())
-                .filter { it.length > 0 }
+                .filter(String::isNotEmpty)
     }
 
 }
