@@ -1,5 +1,6 @@
 package com.aidangrabe.msqlite.tabs.query
 
+import com.aidangrabe.msqlite.Prefs
 import com.aidangrabe.msqlite.android.SqliteApi
 import tornadofx.Controller
 
@@ -22,7 +23,7 @@ class QueryController: Controller() {
     }
 
     private fun execQuery(query: String) {
-        val sqlite = SqliteApi("com.teamwork.chat", "Chat.db")
+        val sqlite = SqliteApi(Prefs.packageName, Prefs.databaseName)
         val engine = view.webview.engine
         val output = sqlite.exec(query)
 
