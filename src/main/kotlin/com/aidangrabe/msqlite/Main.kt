@@ -12,7 +12,7 @@ import tornadofx.vbox
 /**
  *
  */
-class MyApp: App(MainView::class)
+class MsqliteApp : App(MainView::class)
 
 class MainView : View() {
 
