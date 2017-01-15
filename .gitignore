@@ -13,3 +13,7 @@
 
 # intellij
 .idea/misc.xml
+
+# plugins
+.idea/markdown-navigator.xml
+.idea/markdown-navigator/
