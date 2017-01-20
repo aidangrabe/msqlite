@@ -5,7 +5,10 @@ import com.aidangrabe.msqlite.android.SqliteApi
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections.observableArrayList
+import javafx.event.EventHandler
 import javafx.scene.control.TableColumn
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import javafx.util.Callback
 import tornadofx.Controller
 import java.util.*
@@ -22,9 +25,13 @@ class QueryController: Controller() {
 
     fun onViewAttached(view: QueryTab) {
         this.view = view
-    }
 
-    fun onQueryButtonPressed(query: String) = execQuery(query)
+        view.queryField.onKeyPressed = EventHandler<KeyEvent> {
+            if (it.code == KeyCode.ENTER && it.isMetaDown) {
+                execQuery(view.queryField.text)
+            }
+        }
+    }
 
     fun setQuery(query: String) {
         view.queryField.text = query
