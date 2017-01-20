@@ -10,18 +10,17 @@ import javafx.scene.control.TableColumn
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyEvent
 import javafx.util.Callback
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import tornadofx.Controller
 import java.util.*
-import java.util.regex.Pattern
 
 /**
  *
  */
-class QueryController: Controller() {
+class QueryController : Controller() {
 
     private lateinit var view: QueryTab
-    private val columnHeadingPattern by lazy { Pattern.compile("<TH>(\\w+)</TH>") }
-    private val cellPattern by lazy { Pattern.compile("<TD>(.*)</TD>") }
 
     fun onViewAttached(view: QueryTab) {
         this.view = view
@@ -46,9 +45,10 @@ class QueryController: Controller() {
     private fun parseOutput(output: String) {
         view.tableView.columns.clear()
 
-        buildTable(parseColumnNamesFromOutput(output))
+        val document = Jsoup.parse("<html><body><table>$output</table></body></html>")
+        buildTable(parseColumnNamesFromOutput(document))
 
-        view.tableView.items = observableArrayList(parseRowsFromOutput(output))
+        view.tableView.items = observableArrayList(parseRowsFromOutput(document))
     }
 
     private fun buildTable(columns: List<String>) {
@@ -75,37 +75,18 @@ class QueryController: Controller() {
         }
     }
 
-    private fun parseRowsFromOutput(output: String): List<List<String>> {
+    private fun parseRowsFromOutput(document: Document): List<List<String>> {
         val rowsOfCells = ArrayList<List<String>>()
-
-        val rows = output.split("<TR>").filter {
-            it.isNotEmpty() && !it.startsWith("<TH>")
-        }
-
-        rows.forEach {
-            rowsOfCells.add(parseCellsFromRow(it))
-        }
-
+        document.getElementsByTag("tr")
+                .drop(1)    // skip the first row, it's the headers
+                .forEach {
+                    rowsOfCells.add(ArrayList(it.getElementsByTag("td").map { it.text() }))
+                }
         return rowsOfCells
     }
 
-    private fun parseCellsFromRow(row: String): List<String> {
-        return getAllMatchesForGroup(cellPattern, row, 1)
-    }
-
-    private fun parseColumnNamesFromOutput(output: String): List<String> {
-        return getAllMatchesForGroup(columnHeadingPattern, output, 1)
-    }
-
-    private fun getAllMatchesForGroup(pattern: Pattern, input: String, groupNumber: Int): List<String> {
-        val matches = ArrayList<String>()
-        val matcher = pattern.matcher(input)
-        while (matcher.find()) {
-            if (matcher.groupCount() > groupNumber - 1) {
-                matches.add(matcher.group(groupNumber))
-            }
-        }
-        return matches
+    private fun parseColumnNamesFromOutput(document: Document): List<String> {
+        return document.getElementsByTag("th").map { it.text() }
     }
 
 }
