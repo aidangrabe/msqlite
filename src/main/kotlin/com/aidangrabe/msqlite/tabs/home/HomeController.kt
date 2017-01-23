@@ -1,10 +1,15 @@
 package com.aidangrabe.msqlite.tabs.home
 
 import com.aidangrabe.msqlite.Prefs
+import com.aidangrabe.msqlite.android.Adb
+import com.aidangrabe.msqlite.android.Device
 import com.aidangrabe.msqlite.android.SqliteApi
 import com.aidangrabe.msqlite.tabs.query.QueryController
 import com.aidangrabe.msqlite.tabs.query.QueryTab
+import javafx.collections.FXCollections.observableArrayList
+import javafx.util.StringConverter
 import tornadofx.Controller
+import tornadofx.selectedItem
 
 /**
  *
@@ -16,13 +21,38 @@ class HomeController : Controller() {
     fun onViewAttached(view: HomeTab) {
         this.view = view
         reload()
+
+        with (view.devicesComboBox) {
+            converter = object: StringConverter<Device?>() {
+                override fun fromString(string: String?): Device? = null
+
+                override fun toString(device: Device?) = device?.name
+            }
+
+            valueProperty().addListener { observableValue, old, newValue ->
+                Adb.currentDevice = selectedItem
+                reloadTables()
+            }
+        }
     }
 
     fun reload() {
 
-        val sqlite = SqliteApi("com.teamwork.chat", "Chat.db")
-        view.tables.addAll(sqlite.listTables().sorted())
+        val devices = Adb.listDevices()
 
+        with (view.devicesComboBox) {
+            items = observableArrayList(devices)
+            selectionModel.selectFirst()
+            Adb.currentDevice = selectedItem
+        }
+
+        reloadTables()
+    }
+
+    fun reloadTables() {
+        val sqlite = SqliteApi(Prefs.packageName, Prefs.databaseName)
+        view.tables.clear()
+        view.tables.addAll(sqlite.listTables().sorted())
     }
 
     fun onItemClicked(tableName: String) {

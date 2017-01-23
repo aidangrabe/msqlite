@@ -2,14 +2,14 @@ package com.aidangrabe.msqlite.android
 
 import java.io.IOException
 
-import kotlin.collections.List
-
 /**
  *
  */
 object Adb {
 
     val isInstalled by lazy { adbAvailable() }
+
+    var currentDevice: Device? = null
 
     fun listDevices() = parseDeviceList(exec("devices"))
 
@@ -18,8 +18,16 @@ object Adb {
             throw AdbNotInstalledException()
         }
 
+        val options = arrayListOf<String>()
+        currentDevice?.let {
+            with (options) {
+                add("-s")
+                add(it.name)
+            }
+        }
+
         val process = Runtime.getRuntime()
-                .exec(arrayOf("adb") + command)
+                .exec(arrayOf("adb") + options + command)
         val output = process.inputStream.bufferedReader().use { it.readText() }
         process.waitFor()
         return output
