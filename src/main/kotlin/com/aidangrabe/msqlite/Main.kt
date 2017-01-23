@@ -12,7 +12,13 @@ import tornadofx.vbox
 /**
  *
  */
-class MsqliteApp : App(MainView::class)
+class MsqliteApp : App(MainView::class) {
+
+    override fun stop() {
+        ThreadExecutors.workerThreadExecutor.shutdownNow()
+    }
+
+}
 
 class MainView : View() {
 
