@@ -37,7 +37,6 @@ class HomeController : Controller() {
     }
 
     fun reload() {
-
         val devices = Adb.listDevices()
 
         with (view.devicesComboBox) {
@@ -51,8 +50,16 @@ class HomeController : Controller() {
 
     fun reloadTables() {
         val sqlite = SqliteApi(Prefs.packageName, Prefs.databaseName)
-        view.tables.clear()
-        view.tables.addAll(sqlite.listTables().sorted())
+        var tablesFound = sqlite.listTables().sorted()
+
+        if (tablesFound.isEmpty()) {
+            tablesFound = listOf("No tables found in given database")
+        }
+
+        view.tables.apply {
+            clear()
+            addAll(tablesFound)
+        }
     }
 
     fun onItemClicked(tableName: String) {
@@ -66,13 +73,18 @@ class HomeController : Controller() {
     }
 
     fun onPackageNameFieldFocusChanged(focused: Boolean) = onPackageOrDatabaseNameFocused(focused)
+
     fun onDatabaseNameFieldFocusChanged(focused: Boolean) = onPackageOrDatabaseNameFocused(focused)
 
     private fun onPackageOrDatabaseNameFocused(focused: Boolean) {
         if (!focused) {
-            Prefs.packageName = view.packageNameField.text
-            Prefs.databaseName = view.databaseNameField.text
-            Prefs.save()
+            Prefs.apply {
+                packageName = view.packageNameField.text
+                databaseName = view.databaseNameField.text
+                save()
+            }
+
+            reloadTables()
         }
     }
 

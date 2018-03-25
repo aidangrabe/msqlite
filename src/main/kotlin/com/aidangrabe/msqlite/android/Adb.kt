@@ -26,11 +26,13 @@ object Adb {
             }
         }
 
-        val process = Runtime.getRuntime()
-                .exec(arrayOf("adb") + options + command)
-        val output = process.inputStream.bufferedReader().use { it.readText() }
-        process.waitFor()
-        return output
+        val commandToExecute = arrayOf("adb") + options + command
+
+        Runtime.getRuntime().exec(commandToExecute).let {
+            return it.inputStream.bufferedReader().use { it.readText() }.apply {
+                it.waitFor()
+            }
+        }
     }
 
     private fun adbAvailable(): Boolean {

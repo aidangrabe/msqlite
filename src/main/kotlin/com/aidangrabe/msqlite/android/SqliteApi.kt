@@ -19,6 +19,10 @@ class SqliteApi(val packageName: String, val databaseName: String) {
     }
 
     private fun parseTables(input: String): List<String> {
+        // error with package name
+        if (input.startsWith("run-as: Package ")) {
+            return listOf("Error: Package name does not exist")
+        }
         return input.split("\\s+".toRegex())
                 .filter(String::isNotEmpty)
     }

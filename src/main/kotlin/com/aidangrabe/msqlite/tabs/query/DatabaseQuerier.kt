@@ -5,12 +5,6 @@ import com.aidangrabe.msqlite.android.SqliteApi
 import com.aidangrabe.msqlite.mainThread
 import com.aidangrabe.msqlite.model.Table
 import com.aidangrabe.msqlite.workerThread
-import javafx.beans.property.SimpleStringProperty
-import javafx.beans.value.ObservableValue
-import javafx.collections.FXCollections.observableArrayList
-import javafx.scene.control.TableColumn
-import javafx.scene.control.TableView
-import javafx.util.Callback
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.util.*
@@ -34,6 +28,11 @@ class DatabaseQuerier {
     }
 
     private fun parseOutput(output: String): Table {
+        val errorMessagePrefix = "Error: "
+        if (output.startsWith(errorMessagePrefix)) {
+            return Table(listOf("Error"), listOf(listOf(output.substring(errorMessagePrefix.length))))
+        }
+
         val document = Jsoup.parse("<html><body><table>$output</table></body></html>")
         return Table(parseColumnNamesFromOutput(document), parseRowsFromOutput(document))
     }
