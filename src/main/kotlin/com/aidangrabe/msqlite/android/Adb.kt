@@ -13,6 +13,16 @@ object Adb {
 
     fun listDevices() = parseDeviceList(exec("devices"))
 
+    fun listPackages(): List<AndroidPackage> {
+        val packageNameRegex = """package:(.*)""".toRegex()
+
+        val packages = exec("shell", "pm", "list", "packages")
+        return packageNameRegex.findAll(packages)
+                .mapNotNull { it.groups[1]?.value }
+                .map { AndroidPackage(it) }
+                .toList()
+    }
+
     fun exec(vararg command: String): String {
         if (!isInstalled) {
             throw AdbNotInstalledException()
@@ -20,7 +30,7 @@ object Adb {
 
         val options = arrayListOf<String>()
         currentDevice?.let {
-            with (options) {
+            with(options) {
                 add("-s")
                 add(it.name)
             }
@@ -56,10 +66,9 @@ object Adb {
                 null
             }
         }.filterNotNull()
-        .toList()
+                .toList()
 
     }
-
 }
 
 class AdbNotInstalledException : Exception("adb command is not installed. Make sure the Android tools are installed and on your path")

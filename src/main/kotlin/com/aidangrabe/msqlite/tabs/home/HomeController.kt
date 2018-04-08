@@ -2,6 +2,7 @@ package com.aidangrabe.msqlite.tabs.home
 
 import com.aidangrabe.msqlite.Prefs
 import com.aidangrabe.msqlite.android.Adb
+import com.aidangrabe.msqlite.android.AndroidPackage
 import com.aidangrabe.msqlite.android.Device
 import com.aidangrabe.msqlite.android.SqliteApi
 import com.aidangrabe.msqlite.tabs.query.QueryController
@@ -22,8 +23,24 @@ class HomeController : Controller() {
         this.view = view
         reload()
 
-        with (view.devicesComboBox) {
-            converter = object: StringConverter<Device?>() {
+        with(view.packageComboBox) {
+            converter = object : StringConverter<AndroidPackage>() {
+                override fun fromString(string: String): AndroidPackage = AndroidPackage(string)
+                override fun toString(pack: AndroidPackage) = pack.name
+            }
+            val packages = Adb.listPackages().filterNot {
+                it.name.startsWith("com.android") || it.name.startsWith("com.google")
+            }
+            items = observableArrayList(packages)
+            selectionModel.selectFirst()
+
+            valueProperty().addListener { observableValue, old, newValue ->
+                onPackageOrDatabaseNameFocused(false)
+            }
+        }
+
+        with(view.devicesComboBox) {
+            converter = object : StringConverter<Device?>() {
                 override fun fromString(string: String?): Device? = null
 
                 override fun toString(device: Device?) = device?.name
@@ -39,7 +56,7 @@ class HomeController : Controller() {
     fun reload() {
         val devices = Adb.listDevices()
 
-        with (view.devicesComboBox) {
+        with(view.devicesComboBox) {
             items = observableArrayList(devices)
             selectionModel.selectFirst()
             Adb.currentDevice = selectedItem
@@ -79,7 +96,7 @@ class HomeController : Controller() {
     private fun onPackageOrDatabaseNameFocused(focused: Boolean) {
         if (!focused) {
             Prefs.apply {
-                packageName = view.packageNameField.text
+                packageName = view.packageComboBox.selectedItem?.name ?: ""
                 databaseName = view.databaseNameField.text
                 save()
             }
