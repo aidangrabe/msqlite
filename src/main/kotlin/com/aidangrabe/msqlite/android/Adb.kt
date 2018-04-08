@@ -1,6 +1,7 @@
 package com.aidangrabe.msqlite.android
 
 import java.io.IOException
+import java.nio.file.Paths
 
 /**
  *
@@ -12,6 +13,12 @@ object Adb {
     var currentDevice: Device? = null
 
     fun listDevices() = parseDeviceList(exec("devices"))
+
+    fun listDatabasesForPackage(androidPackage: AndroidPackage): List<String> {
+        return exec("shell", "run-as", androidPackage.name, "find", ".", "-iname", "*.db")
+                .split("[\\r\\n]+")
+                .map { Paths.get(it).fileName.toString() }
+    }
 
     fun listPackages(): List<AndroidPackage> {
         val packageNameRegex = """package:(.*)""".toRegex()
@@ -46,26 +53,28 @@ object Adb {
     }
 
     private fun adbAvailable(): Boolean {
-        try {
+        return try {
             Runtime.getRuntime().exec("adb").waitFor()
-            return true
+            true
         } catch (error: IOException) {
-            return false
+            false
         }
     }
 
     private fun parseDeviceList(deviceText: String): List<Device> {
         val regex = """([\w]+-\d+)\s+(\w+)""".toRegex()
 
-        return regex.findAll(deviceText).map {
-            val name = it.groups[1]?.value
-            val type = it.groups[2]?.value
-            if (name != null && type != null) {
-                Device(name, type)
-            } else {
-                null
-            }
-        }.filterNotNull()
+        return regex.findAll(deviceText)
+                .map {
+                    val name = it.groups[1]?.value
+                    val type = it.groups[2]?.value
+                    if (name != null && type != null) {
+                        Device(name, type)
+                    } else {
+                        null
+                    }
+                }
+                .filterNotNull()
                 .toList()
 
     }

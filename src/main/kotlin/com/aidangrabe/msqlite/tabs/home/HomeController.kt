@@ -35,6 +35,9 @@ class HomeController : Controller() {
             selectionModel.selectFirst()
 
             valueProperty().addListener { observableValue, old, newValue ->
+                val dbs = Adb.listDatabasesForPackage(newValue)
+                println(dbs)
+                view.databaseNameField.text = dbs.firstOrNull() ?: "none"
                 onPackageOrDatabaseNameFocused(false)
             }
         }
