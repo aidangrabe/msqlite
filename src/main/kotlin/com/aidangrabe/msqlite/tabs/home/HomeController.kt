@@ -31,8 +31,15 @@ class HomeController : Controller() {
             val packages = Adb.listPackages().filterNot {
                 it.name.startsWith("com.android") || it.name.startsWith("com.google")
             }
+
             items = observableArrayList(packages)
-            selectionModel.selectFirst()
+
+            val index = packages.indexOf(AndroidPackage(Prefs.packageName))
+            if (index != -1) {
+                selectionModel.select(index)
+            } else {
+                selectionModel.selectFirst()
+            }
 
             valueProperty().addListener { observableValue, old, newValue ->
                 val dbs = Adb.listDatabasesForPackage(newValue)
