@@ -8,7 +8,7 @@ import java.nio.file.Paths
  */
 object Adb {
 
-    val isInstalled by lazy { adbAvailable() }
+    private val isInstalled by lazy { adbAvailable() }
 
     var currentDevice: Device? = null
 

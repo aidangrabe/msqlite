@@ -13,7 +13,7 @@ import tornadofx.*
 /**
  *
  */
-class HomeTab(val controller: HomeController) : Tab("Home") {
+class HomeTab(private val controller: HomeController) : Tab("Home") {
 
     val databaseNameField: TextField
     val devicesComboBox: ComboBox<Device>

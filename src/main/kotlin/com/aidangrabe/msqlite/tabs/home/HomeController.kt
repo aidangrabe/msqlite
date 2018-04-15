@@ -41,7 +41,7 @@ class HomeController : Controller() {
                 selectionModel.selectFirst()
             }
 
-            valueProperty().addListener { observableValue, old, newValue ->
+            valueProperty().addListener { _, _, newValue ->
                 val dbs = Adb.listDatabasesForPackage(newValue)
                 println(dbs)
                 view.databaseNameField.text = dbs.firstOrNull() ?: "none"
@@ -56,14 +56,14 @@ class HomeController : Controller() {
                 override fun toString(device: Device?) = device?.name
             }
 
-            valueProperty().addListener { observableValue, old, newValue ->
+            valueProperty().addListener { _, _, _ ->
                 Adb.currentDevice = selectedItem
                 reloadTables()
             }
         }
     }
 
-    fun reload() {
+    private fun reload() {
         val devices = Adb.listDevices()
 
         with(view.devicesComboBox) {
@@ -75,7 +75,7 @@ class HomeController : Controller() {
         reloadTables()
     }
 
-    fun reloadTables() {
+    private fun reloadTables() {
         val sqlite = SqliteApi(Prefs.packageName, Prefs.databaseName)
         var tablesFound = sqlite.listTables().sorted()
 
@@ -98,8 +98,6 @@ class HomeController : Controller() {
         view.tabPane.selectionModel.select(queryTab)
         queryController.setQuery("SELECT * FROM $tableName")
     }
-
-    fun onPackageNameFieldFocusChanged(focused: Boolean) = onPackageOrDatabaseNameFocused(focused)
 
     fun onDatabaseNameFieldFocusChanged(focused: Boolean) = onPackageOrDatabaseNameFocused(focused)
 

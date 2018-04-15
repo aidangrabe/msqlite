@@ -3,7 +3,7 @@ package com.aidangrabe.msqlite.android
 /**
  *
  */
-class SqliteApi(val packageName: String, val databaseName: String) {
+class SqliteApi(private val packageName: String, private val databaseName: String) {
 
     fun listTables(): List<String> {
         val tables = exec(".tables")

@@ -10,15 +10,16 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.util.Callback
-import tornadofx.menuitem
+import tornadofx.action
+import tornadofx.item
 import java.util.*
 
 /**
  *
  */
-data class Table(val columnNames: List<String>, val rows: List<List<String>>) {
+data class Table(private val columnNames: List<String>, private val rows: List<List<String>>) {
 
-    fun addColumnsToTableView(tableView: TableView<List<String>>) {
+    private fun addColumnsToTableView(tableView: TableView<List<String>>) {
         val map = HashMap<String, Int>()
         var colNumber = 0
         columnNames.forEach {
@@ -51,7 +52,7 @@ data class Table(val columnNames: List<String>, val rows: List<List<String>>) {
         return Callback {
             val cell: TableCell<List<String>, String> = TextFieldTableCell()
             cell.contextMenu = ContextMenu().apply {
-                menuitem("Copy") {
+                item("Copy").action {
                     setClipboardText(cell.text)
                 }
             }

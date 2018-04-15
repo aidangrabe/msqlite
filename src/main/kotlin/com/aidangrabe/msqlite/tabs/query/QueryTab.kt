@@ -11,7 +11,7 @@ import tornadofx.vbox
 /**
  *
  */
-class QueryTab(val controller: QueryController) : Tab("Query") {
+class QueryTab(controller: QueryController) : Tab("Query") {
 
     val tableView: TableView<List<String>> = TableView()
     var queryField: TextArea by singleAssign()

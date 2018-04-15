@@ -10,10 +10,10 @@ import javax.json.Json
  */
 object Prefs {
 
-    private val KEY_PACKAGE_NAME = "packageName"
-    private val KEY_DATABASE_NAME = "databaseName"
+    private const val KEY_PACKAGE_NAME = "packageName"
+    private const val KEY_DATABASE_NAME = "databaseName"
+    private const val pathToPrefsFile = ".msqlite-prefs.json"
 
-    private val pathToPrefsFile = ".msqlite-prefs.json"
     private val prefsFile: File
 
     var packageName = "com.example"
@@ -49,7 +49,7 @@ object Prefs {
         prefsFile.writeText(prefsToJson().toString())
     }
 
-    fun JsonBuilder.addIfNotEmpty(key: String, value: String): JsonBuilder {
+    private fun JsonBuilder.addIfNotEmpty(key: String, value: String): JsonBuilder {
         if (value.trim().isNotEmpty()) {
             add(key, value)
         }
