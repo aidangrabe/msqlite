@@ -60,7 +60,7 @@ class HomeTab(private val controller: HomeController) : Tab("Home") {
     private fun databaseNameField() = textfield {
         promptText = "Example.db"
         text = Prefs.databaseName
-        focusedProperty().addListener { obs, old, new -> controller.onDatabaseNameFieldFocusChanged(new) }
+        focusedProperty().addListener { _, _, new -> controller.onDatabaseNameFieldFocusChanged(new) }
     }
 
 }
