@@ -11,6 +11,7 @@ import javafx.scene.control.TableView
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.util.Callback
 import tornadofx.action
+import tornadofx.isInt
 import tornadofx.item
 import java.util.*
 
@@ -18,6 +19,15 @@ import java.util.*
  *
  */
 data class Table(private val columnNames: List<String>, private val rows: List<List<String>>) {
+
+    /** A comparator that sorts by Int if the values are numbers, else by String */
+    private val columnComparator = Comparator<String> { o1, o2 ->
+        if (o1.isInt() && o2.isInt()) {
+            (o1.toInt()).compareTo(o2.toInt())
+        } else {
+            o1.compareTo(o2)
+        }
+    }
 
     private fun addColumnsToTableView(tableView: TableView<List<String>>) {
         val map = HashMap<String, Int>()
@@ -29,6 +39,8 @@ data class Table(private val columnNames: List<String>, private val rows: List<L
 
             col.cellFactory = cellFactory()
             col.cellValueFactory = cellValueFactory(it, map)
+
+            col.comparator = columnComparator
 
             tableView.columns.add(col)
         }
