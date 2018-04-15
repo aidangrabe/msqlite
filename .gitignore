@@ -1,6 +1,10 @@
 # user specific
 .idea/workspace.xml
 .idea/tasks.xml
+.idea/dictionaries/
+
+# generated
+/out/
 
 # gradle
 .idea/gradle.xml
