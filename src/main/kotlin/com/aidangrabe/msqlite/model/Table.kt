@@ -23,12 +23,11 @@ data class Table(val columnNames: List<String>, val rows: List<List<String>>) {
         var colNumber = 0
         columnNames.forEach {
             val col = TableColumn<List<String>, String>(it)
-            val colName = it
 
-            map.put(it, colNumber++)
+            map[it] = colNumber++
 
             col.cellFactory = cellFactory()
-            col.cellValueFactory = cellValueFactory(colName, map)
+            col.cellValueFactory = cellValueFactory(it, map)
 
             tableView.columns.add(col)
         }
@@ -60,7 +59,7 @@ data class Table(val columnNames: List<String>, val rows: List<List<String>>) {
         }
     }
 
-    fun addDataToTableView(tableView: TableView<List<String>>) {
+    private fun addDataToTableView(tableView: TableView<List<String>>) {
         tableView.items = FXCollections.observableArrayList(rows)
     }
 
